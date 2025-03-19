@@ -1,14 +1,12 @@
 RewriteEngine On
-RewriteBase /quotes_api/
+RewriteBase /
 
-# Route API requests to the correct index.php file
-RewriteRule ^api/quotes/?$ api/quotes/index.php [L,QSA]
-RewriteRule ^api/authors/?$ api/authors/index.php [L,QSA]
-RewriteRule ^api/categories/?$ api/categories/index.php [L,QSA]
-
-# Allow direct access to static files (CSS, JS, Images)
+# Ensure existing files and directories are served normally
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Route everything else to the root index.php
-RewriteRule . index.php [L,QSA]
+# Route all API requests to the correct index.php file
+RewriteRule ^api/([^/]+)/?$ api/$1/index.php [QSA,L]
+
+# Send all other requests to the main index.php
+RewriteRule ^ index.php [QSA,L]
