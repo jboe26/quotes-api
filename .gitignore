@@ -1,0 +1,26 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment and sensitive config files
+.env
+*.log
+
+# Ignore dependencies (if using Composer)
+vendor/
+composer.lock
+
+# Ignore cache and temp files
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore XAMPP or local server files
+xampp/
+htdocs/
