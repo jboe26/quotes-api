@@ -2,6 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
+// Determine HTTP method
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'OPTIONS') {
@@ -10,8 +11,9 @@ if ($method === 'OPTIONS') {
     exit();
 }
 
-include_once __DIR__ . "/../config/database.php";
-include_once __DIR__ . "/../controllers/AuthorController.php";
+// Include necessary files
+include_once '../../config/database.php';
+include_once '../../controllers/AuthorController.php';
 
 // Initialize Database Connection
 $database = new Database();
