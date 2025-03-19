@@ -1,10 +1,13 @@
 RewriteEngine On
 RewriteBase /
 
-# Redirect requests to correct index.php files
+# Redirect API requests to the correct index.php file inside each subfolder
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^api/([^/]+)/?$ api/$1/index.php [L]
+RewriteRule ^api/(.+)/?$ api/$1/index.php [L]
 
-# Send all other requests to main index.php
-RewriteRule ^$ index.php [QSA,L]
+# Ensure the root /api/ request is handled by api/index.php
+RewriteRule ^api/?$ api/index.php [QSA,L]
+
+# Send all other requests to the main index.php (frontend or general API overview)
+RewriteRule ^ index.php [QSA,L]
