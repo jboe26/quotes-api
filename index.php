@@ -1,9 +1,7 @@
 <?php
-// Set headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Output API homepage
 echo json_encode([
     "message" => "Welcome to the Quotes REST API!",
     "endpoints" => [
@@ -30,5 +28,5 @@ echo json_encode([
             "DELETE /api/categories/?id={category_id}" => "Delete a category by ID"
         ]
     ]
-], JSON_PRETTY_PRINT);
+]);
 ?>
