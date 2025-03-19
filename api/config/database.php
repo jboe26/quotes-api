@@ -12,8 +12,8 @@ class Database {
             if ($url) {
                 // Parse the DATABASE_URL
                 $db = parse_url($url);
-                $host = $db['host'];
-                $port = $db['port'];
+                $host = $db['host'] ?? null;
+                $port = $db['port'] ?? 5432;
                 $db_name = ltrim($db['path'], '/');
                 $username = $db['user'];
                 $password = $db['pass'];
