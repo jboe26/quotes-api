@@ -1,0 +1,16 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment files
+.env
+config.php
+
+# Ignore local dependencies
+node_modules/
+vendor/
+
+# Ignore Git & Docker files
+.git/
+.gitignore
+.dockerignore
