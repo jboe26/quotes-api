@@ -1,12 +1,15 @@
 RewriteEngine On
 RewriteBase /
 
-# Allow access to API subfolders
+# Ensure API requests go to their respective index.php files
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^api/quotes/?$ api/quotes/index.php [L]
 RewriteRule ^api/authors/?$ api/authors/index.php [L]
 RewriteRule ^api/categories/?$ api/categories/index.php [L]
 
-# Redirect API root to index.html
-DirectoryIndex index.html index.php
+# Redirect root API calls to API index.php (or update to index.html if needed)
+RewriteRule ^api/?$ api/index.php [L]
+
+# Redirect everything else to a public homepage (optional)
+RewriteRule ^$ index.html [L]

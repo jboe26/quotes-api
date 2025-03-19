@@ -1,34 +1,25 @@
-# Use the official PHP image as the base
+# Use an official PHP runtime with Apache
 FROM php:8.2-apache
 
-# Set environment variables
-ENV ACCEPT_EULA=Y
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install necessary system dependencies
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo pdo_pgsql pgsql
-
-# Enable Apache mod_rewrite for clean URLs
+# Enable mod_rewrite for Apache
 RUN a2enmod rewrite
 
-# Copy the project files to the container
-COPY . /var/www/html/
+# Install necessary PHP extensions for PostgreSQL
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql
 
-# Set the working directory
-WORKDIR /var/www/html/
+# Set working directory
+WORKDIR /var/www/html
 
-# Ensure correct file permissions
-RUN chown -R www-data:www-data /var/www/html/ && chmod -R 755 /var/www/html/
+# Copy project files
+COPY . /var/www/html
 
-# Expose port 80 for HTTP traffic
+# Set correct permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Expose port 80 for Render
 EXPOSE 80
 
-# Start Apache server in the foreground
+# Start Apache in the foreground
 CMD ["apache2-foreground"]
