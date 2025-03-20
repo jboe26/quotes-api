@@ -89,7 +89,11 @@ class Quote {
         $stmt->bindParam(':author_id', $this->author_id);
         $stmt->bindParam(':category_id', $this->category_id);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $this->conn->lastInsertId();
+        } else {
+            return false;
+        }
     }
 
     // Update a quote
@@ -102,7 +106,11 @@ class Quote {
         $stmt->bindParam(':category_id', $this->category_id);
         $stmt->bindParam(':id', $this->id);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Delete a quote
@@ -111,7 +119,11 @@ class Quote {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

@@ -44,7 +44,7 @@ class AuthorController {
     private function getAuthorById($id) {
         $this->author->id = $id;
         $stmt = $this->author->readSingle();
-        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC) ?: ["message" => "Author Not Found"]);
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC) ?: ["message" => "author_id Not Found"]);
     }
 
     private function createAuthor() {

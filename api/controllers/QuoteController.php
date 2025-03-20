@@ -74,26 +74,71 @@ class QuoteController {
 
     private function createQuote() {
         $data = json_decode(file_get_contents("php://input"));
+    
+        // Check if required fields are provided
         if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id)) {
             $this->quote->quote = $data->quote;
             $this->quote->author_id = $data->author_id;
             $this->quote->category_id = $data->category_id;
-
-            echo json_encode($this->quote->create() ? ["message" => "Quote Created"] : ["message" => "Failed to Create Quote"]);
+    
+            // Validate if author_id exists
+            if (!$this->quote->authorExists()) {
+                echo json_encode(["message" => "author_id Not Found"]);
+                return;
+            }
+    
+            // Validate if category_id exists
+            if (!$this->quote->categoryExists()) {
+                echo json_encode(["message" => "category_id Not Found"]);
+                return;
+            }
+    
+            // Create the quote and get the new quote ID
+            $new_quote_id = $this->quote->create();
+    
+            if ($new_quote_id) {
+                // Retrieve the newly created quote
+                $new_quote = $this->quote->getQuoteById($new_quote_id);
+    
+                echo json_encode($new_quote);
+            } else {
+                echo json_encode(["message" => "Database Error"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function updateQuote() {
         $data = json_decode(file_get_contents("php://input"));
-        if (!empty($data->id) && !empty($data->quote) && !empty($data->author_id) && !empty($data->category_id)) {
-            $this->quote->id = $data->id;
+    
+        // Check if required fields are provided
+        if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id)) {
             $this->quote->quote = $data->quote;
             $this->quote->author_id = $data->author_id;
             $this->quote->category_id = $data->category_id;
-
-            echo json_encode($this->quote->update() ? ["message" => "Quote Updated"] : ["message" => "Failed to Update Quote"]);
+    
+            // Validate if author_id exists
+            if (!$this->quote->authorExists()) {
+                echo json_encode(["message" => "author_id Not Found"]);
+                return;
+            }
+    
+            // Validate if category_id exists
+            if (!$this->quote->categoryExists()) {
+                echo json_encode(["message" => "category_id Not Found"]);
+                return;
+            }
+    
+            // Update the quote and get the updated quote data
+            $updated_quote = $this->quote->update();
+    
+            if ($updated_quote) {
+                echo json_encode($updated_quote); // Return the updated quote
+            } else {
+                echo json_encode(["message" => "Failed to update quote"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
@@ -101,12 +146,28 @@ class QuoteController {
 
     private function deleteQuote() {
         $data = json_decode(file_get_contents("php://input"));
+    
+        // Check if required field 'id' is provided
         if (!empty($data->id)) {
             $this->quote->id = $data->id;
-            echo json_encode($this->quote->delete() ? ["message" => "Quote Deleted"] : ["message" => "No Quotes Found"]);
+    
+            // Validate if the quote exists
+            if (!$this->quote->quoteExists()) {
+                echo json_encode(["message" => "Quote Not Found"]);
+                return;
+            }
+    
+            // Delete the quote
+            $deleted_quote = $this->quote->delete();
+    
+            if ($deleted_quote) {
+                echo json_encode(["message" => "Quote Deleted"]);
+            } else {
+                echo json_encode(["message" => "Failed to delete quote"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
-    }
+    }    
 }
 ?>

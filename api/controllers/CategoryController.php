@@ -44,7 +44,7 @@ class CategoryController {
     private function getCategoryById($id) {
         $this->category->id = $id;
         $stmt = $this->category->readSingle();
-        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC) ?: ["message" => "Category Not Found"]);
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC) ?: ["message" => "category_id Not Found"]);
     }
 
     private function createCategory() {
