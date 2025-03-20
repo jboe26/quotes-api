@@ -72,12 +72,28 @@ class CategoryController {
 
     private function deleteCategory() {
         $data = json_decode(file_get_contents("php://input"));
+    
+        // Check if required field 'id' is provided
         if (!empty($data->id)) {
             $this->category->id = $data->id;
-            echo json_encode($this->category->delete() ? ["message" => "Category Deleted"] : ["message" => "Category Not Found"]);
+    
+            // Validate if the category exists
+            if (!$this->category->categoryExists()) {
+                echo json_encode(["message" => "Category Not Found"]);
+                return;
+            }
+    
+            // Delete the category
+            $deleted_category = $this->category->delete();
+    
+            if ($deleted_category) {
+                echo json_encode(["message" => "Category Deleted", "id" => $data->id]);
+            } else {
+                echo json_encode(["message" => "Failed to delete category"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
-    }
+    } 
 }
 ?>

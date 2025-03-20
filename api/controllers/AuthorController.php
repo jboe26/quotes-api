@@ -72,12 +72,31 @@ class AuthorController {
 
     private function deleteAuthor() {
         $data = json_decode(file_get_contents("php://input"));
+    
+        // Check if required field 'id' is provided
         if (!empty($data->id)) {
             $this->author->id = $data->id;
-            echo json_encode($this->author->delete() ? ["message" => "Author Deleted"] : ["message" => "Author Not Found"]);
+    
+            // Validate if the author exists
+            if (!$this->author->authorExists()) {
+                echo json_encode(["message" => "Author Not Found"]);
+                return;
+            }
+    
+            // Delete the author
+            $deleted_author = $this->author->delete();
+    
+            if ($deleted_author) {
+                echo json_encode(["message" => "Author Deleted", "id" => $data->id]);
+            } else {
+                echo json_encode(["message" => "Failed to delete author"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
-    }
+    } 
+
+
 }
 ?>
+
