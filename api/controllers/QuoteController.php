@@ -161,7 +161,7 @@ class QuoteController {
             $deleted_quote = $this->quote->delete();
     
             if ($deleted_quote) {
-                echo json_encode(["message" => "Quote Deleted"]);
+                echo json_encode(["message" => "Quote Deleted", "id" => $data->id]);
             } else {
                 echo json_encode(["message" => "Failed to delete quote"]);
             }
