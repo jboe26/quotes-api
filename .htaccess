@@ -8,8 +8,8 @@ RewriteRule ^api/quotes/?$ api/quotes/index.php [L]
 RewriteRule ^api/authors/?$ api/authors/index.php [L]
 RewriteRule ^api/categories/?$ api/categories/index.php [L]
 
-# Redirect root API calls to API index.php (or update to index.html if needed)
+# Redirect root API calls to API index.php 
 RewriteRule ^api/?$ api/index.php [L]
 
-# Redirect everything else to a public homepage (optional)
+# Redirect everything else to a public homepage 
 RewriteRule ^$ index.html [L]
