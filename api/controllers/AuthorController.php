@@ -111,5 +111,8 @@ class AuthorController {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     } 
+
+
 }
 ?>
+
