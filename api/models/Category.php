@@ -10,7 +10,6 @@ class Category {
         $this->conn = $db;
     }
 
-    // Read all categories
     public function read() {
         $query = "SELECT * FROM categories";
         $stmt = $this->conn->prepare($query);
@@ -18,7 +17,6 @@ class Category {
         return $stmt;
     }
 
-    // Read a single category by ID
     public function readSingle() {
         $query = "SELECT * FROM categories WHERE id = :id";
         $stmt = $this->conn->prepare($query);
@@ -27,16 +25,20 @@ class Category {
         return $stmt;
     }
 
-    // Create a new category
     public function create() {
+        if (empty($this->category)) {
+            return false; // missing category
+        }
         $query = "INSERT INTO categories (category) VALUES (:category)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':category', $this->category);
         return $stmt->execute();
     }
 
-    // Update a category
     public function update() {
+        if (empty($this->category) || empty($this->id)) {
+            return false; // missing parameters
+        }
         $query = "UPDATE categories SET category = :category WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':category', $this->category);
@@ -44,8 +46,10 @@ class Category {
         return $stmt->execute();
     }
 
-    // Delete a category
     public function delete() {
+        if (empty($this->id)) {
+            return false; // missing id
+        }
         $query = "DELETE FROM categories WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);

@@ -1,33 +1,39 @@
 <?php
-// Include the Author model so the controller can use it
-include_once __DIR__ . "/../models/Author.php";
+// Include the Quote model so the controller can use it
+include_once __DIR__ . "/../models/Quote.php";
 
-class AuthorController {
+class QuoteController {
     private $db;
-    private $author;
+    private $quote;
 
     public function __construct($db) {
         $this->db = $db;
-        $this->author = new Author($db);
+        $this->quote = new Quote($db);
     }
 
     public function handleRequest($method, $params) {
         switch ($method) {
             case 'GET':
                 if (isset($params['id'])) {
-                    $this->getAuthorById($params['id']);
+                    $this->getQuoteById($params['id']);
+                } elseif (isset($params['author_id']) && isset($params['category_id'])) {
+                    $this->getQuotesByAuthorAndCategory($params['author_id'], $params['category_id']);
+                } elseif (isset($params['author_id'])) {
+                    $this->getQuotesByAuthor($params['author_id']);
+                } elseif (isset($params['category_id'])) {
+                    $this->getQuotesByCategory($params['category_id']);
                 } else {
-                    $this->getAllAuthors();
+                    $this->getAllQuotes();
                 }
                 break;
             case 'POST':
-                $this->createAuthor();
+                $this->createQuote();
                 break;
             case 'PUT':
-                $this->updateAuthor();
+                $this->updateQuote();
                 break;
             case 'DELETE':
-                $this->deleteAuthor();
+                $this->deleteQuote();
                 break;
             default:
                 http_response_code(405);
@@ -35,35 +41,71 @@ class AuthorController {
         }
     }
 
-    private function getAllAuthors() {
-        $stmt = $this->author->read();
-        $authors = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($authors ?: ["message" => "No Authors Found"]);
+    private function getAllQuotes() {
+        $stmt = $this->quote->read();
+        $quotes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($quotes ?: ["message" => "No Quotes Found"]);
     }
 
-    private function getAuthorById($id) {
-        $this->author->id = $id;
-        $stmt = $this->author->readSingle();
-        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC) ?: ["message" => "author_id Not Found"]);
+    private function getQuoteById($id) {
+        $this->quote->id = $id;
+        $stmt = $this->quote->readSingle();
+        echo json_encode($stmt->fetch(PDO::FETCH_ASSOC) ?: ["message" => "No Quotes Found"]);
     }
 
-    private function createAuthor() {
+    private function getQuotesByAuthor($author_id) {
+        $this->quote->author_id = $author_id;
+        $stmt = $this->quote->readByAuthor();
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC) ?: ["message" => "No Quotes Found"]);
+    }
+
+    private function getQuotesByCategory($category_id) {
+        $this->quote->category_id = $category_id;
+        $stmt = $this->quote->readByCategory();
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC) ?: ["message" => "No Quotes Found"]);
+    }
+
+    private function getQuotesByAuthorAndCategory($author_id, $category_id) {
+        $this->quote->author_id = $author_id;
+        $this->quote->category_id = $category_id;
+        $stmt = $this->quote->readByAuthorAndCategory();
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC) ?: ["message" => "No Quotes Found"]);
+    }
+
+    private function createQuote() {
         $data = json_decode(file_get_contents("php://input"));
     
-        if (!empty($data->author)) {
-            $this->author->author = $data->author;
+        // Check if required fields are provided
+        if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id)) {
+            $this->quote->quote = $data->quote;
+            $this->quote->author_id = $data->author_id;
+            $this->quote->category_id = $data->category_id;
     
-            // Create the author and get the new author ID
-            $new_author_id = $this->author->create();
+            // Validate if author_id exists
+            if (!$this->quote->authorExists()) {
+                echo json_encode(["message" => "author_id Not Found"]);
+                return;
+            }
     
-            if ($new_author_id) {
-                // Retrieve the newly created author
-                $new_author = $this->author->getAuthorById($new_author_id);
+            // Validate if category_id exists
+            if (!$this->quote->categoryExists()) {
+                echo json_encode(["message" => "category_id Not Found"]);
+                return;
+            }
     
-                // Return the newly created author with id and author fields
+            // Create the quote and get the new quote ID
+            $new_quote_id = $this->quote->create();
+    
+            if ($new_quote_id) {
+                // Retrieve the newly created quote
+                $new_quote = $this->quote->getQuoteById($new_quote_id);
+    
+                // Ensure you return the complete quote object
                 echo json_encode([
-                    "id" => $new_author['id'],
-                    "author" => $new_author['author']
+                    "id" => $new_quote['id'],
+                    "quote" => $new_quote['quote'],
+                    "author_id" => $new_quote['author_id'],
+                    "category_id" => $new_quote['category_id']
                 ]);
             } else {
                 echo json_encode(["message" => "Database Error"]);
@@ -73,46 +115,68 @@ class AuthorController {
         }
     }
     
+    
 
-    private function updateAuthor() {
+    private function updateQuote() {
         $data = json_decode(file_get_contents("php://input"));
-        if (!empty($data->id) && !empty($data->author)) {
-            $this->author->id = $data->id;
-            $this->author->author = $data->author;
-
-            echo json_encode($this->author->update() ? ["message" => "Author Updated"] : ["message" => "Failed to Update Author"]);
+    
+        // Check if required fields are provided
+        if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id) && !empty($data->id)) {
+            $this->quote->quote = $data->quote;
+            $this->quote->author_id = $data->author_id;
+            $this->quote->category_id = $data->category_id;
+            $this->quote->id = $data->id;
+    
+            // Validate if author_id exists
+            if (!$this->quote->authorExists()) {
+                echo json_encode(["message" => "author_id Not Found"]);
+                return;
+            }
+    
+            // Validate if category_id exists
+            if (!$this->quote->categoryExists()) {
+                echo json_encode(["message" => "category_id Not Found"]);
+                return;
+            }
+    
+            // Update the quote and get the updated quote data
+            $updated_quote = $this->quote->update();
+    
+            if ($updated_quote) {
+                echo json_encode($updated_quote); // Return the updated quote
+            } else {
+                echo json_encode(["message" => "Failed to update quote"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
-    private function deleteAuthor() {
+    private function deleteQuote() {
         $data = json_decode(file_get_contents("php://input"));
     
         // Check if required field 'id' is provided
         if (!empty($data->id)) {
-            $this->author->id = $data->id;
+            $this->quote->id = $data->id;
     
-            // Validate if the author exists
-            if (!$this->author->authorExists()) {
-                echo json_encode(["message" => "Author Not Found"]);
+            // Validate if the quote exists
+            if (!$this->quote->quoteExists()) {
+                echo json_encode(["message" => "Quote Not Found"]);
                 return;
             }
     
-            // Delete the author
-            $deleted_author = $this->author->delete();
+            // Delete the quote
+            $deleted_quote = $this->quote->delete();
     
-            if ($deleted_author) {
-                echo json_encode(["message" => "Author Deleted", "id" => $data->id]);
+            if ($deleted_quote) {
+                echo json_encode(["message" => "Quote Deleted", "id" => $data->id]);
             } else {
-                echo json_encode(["message" => "Failed to delete author"]);
+                echo json_encode(["message" => "Failed to delete quote"]);
             }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
-    } 
-
-
+    }    
 }
 ?>
-

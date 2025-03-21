@@ -15,7 +15,6 @@ if ($method === 'OPTIONS') {
 include_once __DIR__ . '/../config/database.php';
 include_once __DIR__ . '/../controllers/CategoryController.php';
 
-
 // Initialize Database Connection
 $database = new Database();
 $db = $database->getConnection();

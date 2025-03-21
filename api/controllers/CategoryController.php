@@ -49,18 +49,15 @@ class CategoryController {
 
     private function createCategory() {
         $data = json_decode(file_get_contents("php://input"));
-    
+
         if (!empty($data->category)) {
             $this->category->category = $data->category;
-    
-            // Create the category and get the new category ID
+
             $new_category_id = $this->category->create();
-    
+
             if ($new_category_id) {
-                // Retrieve the newly created category
                 $new_category = $this->category->getCategoryById($new_category_id);
-    
-                // Return the newly created category with id and category fields
+
                 echo json_encode([
                     "id" => $new_category['id'],
                     "category" => $new_category['category']
@@ -72,7 +69,6 @@ class CategoryController {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
-    
 
     private function updateCategory() {
         $data = json_decode(file_get_contents("php://input"));
@@ -80,7 +76,7 @@ class CategoryController {
             $this->category->id = $data->id;
             $this->category->category = $data->category;
 
-            echo json_encode($this->category->update() ? ["message" => "Category Updated"] : ["message" => "Failed to Update Category"]);
+            echo json_encode($this->category->update() ? ["id" => $data->id, "category" => $data->category, "message" => "Category Updated"] : ["message" => "Failed to Update Category"]);
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
@@ -88,20 +84,17 @@ class CategoryController {
 
     private function deleteCategory() {
         $data = json_decode(file_get_contents("php://input"));
-    
-        // Check if required field 'id' is provided
+
         if (!empty($data->id)) {
             $this->category->id = $data->id;
-    
-            // Validate if the category exists
+
             if (!$this->category->categoryExists()) {
                 echo json_encode(["message" => "Category Not Found"]);
                 return;
             }
-    
-            // Delete the category
+
             $deleted_category = $this->category->delete();
-    
+
             if ($deleted_category) {
                 echo json_encode(["message" => "Category Deleted", "id" => $data->id]);
             } else {
@@ -110,6 +103,6 @@ class CategoryController {
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
-    } 
+    }
 }
 ?>
