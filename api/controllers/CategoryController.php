@@ -49,14 +49,30 @@ class CategoryController {
 
     private function createCategory() {
         $data = json_decode(file_get_contents("php://input"));
+    
         if (!empty($data->category)) {
             $this->category->category = $data->category;
-
-            echo json_encode($this->category->create() ? ["message" => "Category Created"] : ["message" => "Failed to Create Category"]);
+    
+            // Create the category and get the new category ID
+            $new_category_id = $this->category->create();
+    
+            if ($new_category_id) {
+                // Retrieve the newly created category
+                $new_category = $this->category->getCategoryById($new_category_id);
+    
+                // Return the newly created category with id and category fields
+                echo json_encode([
+                    "id" => $new_category['id'],
+                    "category" => $new_category['category']
+                ]);
+            } else {
+                echo json_encode(["message" => "Database Error"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function updateCategory() {
         $data = json_decode(file_get_contents("php://input"));

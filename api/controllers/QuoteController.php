@@ -100,7 +100,13 @@ class QuoteController {
                 // Retrieve the newly created quote
                 $new_quote = $this->quote->getQuoteById($new_quote_id);
     
-                echo json_encode($new_quote);
+                // Ensure you return the complete quote object
+                echo json_encode([
+                    "id" => $new_quote['id'],
+                    "quote" => $new_quote['quote'],
+                    "author_id" => $new_quote['author_id'],
+                    "category_id" => $new_quote['category_id']
+                ]);
             } else {
                 echo json_encode(["message" => "Database Error"]);
             }
@@ -109,15 +115,17 @@ class QuoteController {
         }
     }
     
+    
 
     private function updateQuote() {
         $data = json_decode(file_get_contents("php://input"));
     
         // Check if required fields are provided
-        if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id)) {
+        if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id) && !empty($data->id)) {
             $this->quote->quote = $data->quote;
             $this->quote->author_id = $data->author_id;
             $this->quote->category_id = $data->category_id;
+            $this->quote->id = $data->id;
     
             // Validate if author_id exists
             if (!$this->quote->authorExists()) {
@@ -143,6 +151,7 @@ class QuoteController {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function deleteQuote() {
         $data = json_decode(file_get_contents("php://input"));

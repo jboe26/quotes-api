@@ -49,14 +49,30 @@ class AuthorController {
 
     private function createAuthor() {
         $data = json_decode(file_get_contents("php://input"));
+    
         if (!empty($data->author)) {
             $this->author->author = $data->author;
-
-            echo json_encode($this->author->create() ? ["message" => "Author Created"] : ["message" => "Failed to Create Author"]);
+    
+            // Create the author and get the new author ID
+            $new_author_id = $this->author->create();
+    
+            if ($new_author_id) {
+                // Retrieve the newly created author
+                $new_author = $this->author->getAuthorById($new_author_id);
+    
+                // Return the newly created author with id and author fields
+                echo json_encode([
+                    "id" => $new_author['id'],
+                    "author" => $new_author['author']
+                ]);
+            } else {
+                echo json_encode(["message" => "Database Error"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function updateAuthor() {
         $data = json_decode(file_get_contents("php://input"));
@@ -95,8 +111,5 @@ class AuthorController {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     } 
-
-
 }
 ?>
-
