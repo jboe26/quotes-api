@@ -10,6 +10,7 @@ class Author {
         $this->conn = $db;
     }
 
+    // Read all authors
     public function read() {
         $query = "SELECT * FROM authors";
         $stmt = $this->conn->prepare($query);
@@ -17,6 +18,7 @@ class Author {
         return $stmt;
     }
 
+    // Read a single author by ID
     public function readSingle() {
         $query = "SELECT * FROM authors WHERE id = :id";
         $stmt = $this->conn->prepare($query);
@@ -25,20 +27,16 @@ class Author {
         return $stmt;
     }
 
+    // Create a new author
     public function create() {
-        if (empty($this->author)) {
-            return false; // missing author
-        }
         $query = "INSERT INTO authors (author) VALUES (:author)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':author', $this->author);
         return $stmt->execute();
     }
 
+    // Update an author
     public function update() {
-        if (empty($this->author) || empty($this->id)) {
-            return false; // missing parameters
-        }
         $query = "UPDATE authors SET author = :author WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':author', $this->author);
@@ -46,10 +44,8 @@ class Author {
         return $stmt->execute();
     }
 
+    // Delete an author
     public function delete() {
-        if (empty($this->id)) {
-            return false; // missing id
-        }
         $query = "DELETE FROM authors WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);

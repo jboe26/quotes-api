@@ -12,8 +12,9 @@ if ($method === 'OPTIONS') {
 }
 
 // Include necessary files
-include_once __DIR__ . '/../config/database.php';
-include_once __DIR__ . '/../controllers/QuoteController.php';
+include_once(__DIR__ . '/../config/database.php');
+include_once(__DIR__ . '/../controllers/QuoteController.php');
+
 
 // Initialize Database Connection
 $database = new Database();
