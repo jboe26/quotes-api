@@ -32,7 +32,11 @@ class Author {
         $query = "INSERT INTO authors (author) VALUES (:author)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':author', $this->author);
-        return $stmt->execute();
+
+        if ($stmt->execute()) {
+            return true;  // Return success flag
+        }
+        return false;  // Return failure flag
     }
 
     // Update an author
@@ -50,6 +54,15 @@ class Author {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         return $stmt->execute();
+    }
+
+    // Check if the author exists
+    public function authorExists() {
+        $query = "SELECT id FROM authors WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+        return $stmt->rowCount() > 0; 
     }
 }
 ?>

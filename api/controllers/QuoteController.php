@@ -1,4 +1,8 @@
 <?php
+
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+
 // Include the Quote model so the controller can use it
 include_once __DIR__ . "/../models/Quote.php";
 
@@ -131,7 +135,12 @@ class QuoteController {
             $updated_quote = $this->quote->update();
 
             if ($updated_quote) {
-                echo json_encode($updated_quote);
+                echo json_encode([
+                    "id" => $updated_quote['id'],
+                    "quote" => $updated_quote['quote'],
+                    "author_id" => $updated_quote['author_id'],
+                    "category_id" => $updated_quote['category_id']
+                ]);
             } else {
                 echo json_encode(["message" => "Failed to update quote"]);
             }
@@ -163,4 +172,5 @@ class QuoteController {
         }
     }
 }
+
 ?>

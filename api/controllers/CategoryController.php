@@ -1,4 +1,8 @@
 <?php
+
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+
 // Include the Category model so the controller can use it
 include_once __DIR__ . "/../models/Category.php";
 
@@ -60,7 +64,8 @@ class CategoryController {
 
                 echo json_encode([
                     "id" => $new_category['id'],
-                    "category" => $new_category['category']
+                    "category" => $new_category['category'],
+                    "message" => "Category Created Successfully"
                 ]);
             } else {
                 echo json_encode(["message" => "Database Error"]);
@@ -76,7 +81,17 @@ class CategoryController {
             $this->category->id = $data->id;
             $this->category->category = $data->category;
 
-            echo json_encode($this->category->update() ? ["id" => $data->id, "category" => $data->category, "message" => "Category Updated"] : ["message" => "Failed to Update Category"]);
+            $updated = $this->category->update();
+
+            if ($updated) {
+                echo json_encode([
+                    "id" => $data->id,
+                    "category" => $data->category,
+                    "message" => "Category Updated Successfully"
+                ]);
+            } else {
+                echo json_encode(["message" => "Failed to Update Category"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
@@ -96,7 +111,10 @@ class CategoryController {
             $deleted_category = $this->category->delete();
 
             if ($deleted_category) {
-                echo json_encode(["message" => "Category Deleted", "id" => $data->id]);
+                echo json_encode([
+                    "message" => "Category Deleted Successfully",
+                    "id" => $data->id
+                ]);
             } else {
                 echo json_encode(["message" => "Failed to delete category"]);
             }
@@ -105,4 +123,5 @@ class CategoryController {
         }
     }
 }
+
 ?>
