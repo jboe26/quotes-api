@@ -53,11 +53,9 @@ class AuthorController {
 
     private function createAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-        
-        // Check for invalid JSON
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo json_encode(["message" => "Invalid JSON data"]);
-            http_response_code(400);
             return;
         }
 
@@ -65,20 +63,16 @@ class AuthorController {
             $this->author->author = $data->author;
 
             echo json_encode($this->author->create() ? ["message" => "Author Created"] : ["message" => "Failed to Create Author"]);
-            http_response_code(201); // Created
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            http_response_code(400); // Bad Request
         }
     }
 
     private function updateAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-        
-        // Check for invalid JSON
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo json_encode(["message" => "Invalid JSON data"]);
-            http_response_code(400);
             return;
         }
 
@@ -87,38 +81,33 @@ class AuthorController {
             $this->author->author = $data->author;
 
             echo json_encode($this->author->update() ? ["message" => "Author Updated"] : ["message" => "Failed to Update Author"]);
-            http_response_code(200); // OK
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            http_response_code(400); // Bad Request
         }
     }
 
     private function deleteAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-        
-        // Check for invalid JSON
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo json_encode(["message" => "Invalid JSON data"]);
-            http_response_code(400);
             return;
         }
 
         if (!empty($data->id)) {
             $this->author->id = $data->id;
-            
+
+            // Check if the author exists
             if (!$this->author->authorExists()) {
                 echo json_encode(["message" => "Author Not Found"]);
-                http_response_code(404); // Not Found
                 return;
             }
-            
+
             $deleted_author = $this->author->delete();
+
             echo json_encode($deleted_author ? ["message" => "Author Deleted", "id" => $data->id] : ["message" => "Failed to delete author"]);
-            http_response_code(200); // OK
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            http_response_code(400); // Bad Request
         }
     }
 }

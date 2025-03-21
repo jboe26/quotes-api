@@ -54,13 +54,6 @@ class CategoryController {
     private function createCategory() {
         $data = json_decode(file_get_contents("php://input"));
 
-        // Check for invalid JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            echo json_encode(["message" => "Invalid JSON data"]);
-            http_response_code(400);
-            return;
-        }
-
         if (!empty($data->category)) {
             $this->category->category = $data->category;
 
@@ -68,69 +61,67 @@ class CategoryController {
 
             if ($new_category_id) {
                 $new_category = $this->category->getCategoryById($new_category_id);
+
                 echo json_encode([
                     "id" => $new_category['id'],
-                    "category" => $new_category['category']
+                    "category" => $new_category['category'],
+                    "message" => "Category Created Successfully"
                 ]);
-                http_response_code(201); // Created
             } else {
                 echo json_encode(["message" => "Database Error"]);
-                http_response_code(500); // Internal Server Error
             }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            http_response_code(400); // Bad Request
         }
     }
 
     private function updateCategory() {
         $data = json_decode(file_get_contents("php://input"));
-
-        // Check for invalid JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            echo json_encode(["message" => "Invalid JSON data"]);
-            http_response_code(400);
-            return;
-        }
-
         if (!empty($data->id) && !empty($data->category)) {
             $this->category->id = $data->id;
             $this->category->category = $data->category;
 
-            echo json_encode($this->category->update() ? ["message" => "Category Updated"] : ["message" => "Failed to Update Category"]);
-            http_response_code(200); // OK
+            $updated = $this->category->update();
+
+            if ($updated) {
+                echo json_encode([
+                    "id" => $data->id,
+                    "category" => $data->category,
+                    "message" => "Category Updated Successfully"
+                ]);
+            } else {
+                echo json_encode(["message" => "Failed to Update Category"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            http_response_code(400); // Bad Request
         }
     }
 
     private function deleteCategory() {
         $data = json_decode(file_get_contents("php://input"));
 
-        // Check for invalid JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            echo json_encode(["message" => "Invalid JSON data"]);
-            http_response_code(400);
-            return;
-        }
-
         if (!empty($data->id)) {
             $this->category->id = $data->id;
 
             if (!$this->category->categoryExists()) {
                 echo json_encode(["message" => "Category Not Found"]);
-                http_response_code(404); // Not Found
                 return;
             }
 
             $deleted_category = $this->category->delete();
-            echo json_encode($deleted_category ? ["message" => "Category Deleted", "id" => $data->id] : ["message" => "Failed to delete category"]);
-            http_response_code(200); // OK
+
+            if ($deleted_category) {
+                echo json_encode([
+                    "message" => "Category Deleted Successfully",
+                    "id" => $data->id
+                ]);
+            } else {
+                echo json_encode(["message" => "Failed to delete category"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            http_response_code(400); // Bad Request
         }
     }
 }
+
 ?>
