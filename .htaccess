@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /
+RewriteBase /quotes_api/
 
 # Ensure API requests go to their respective index.php files
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -11,5 +11,5 @@ RewriteRule ^api/categories/?$ api/categories/index.php [L]
 # Redirect root API calls to API index.php 
 RewriteRule ^api/?$ api/index.php [L]
 
-# Redirect everything else to a public homepage 
+# Redirect everything else to a public homepage
 RewriteRule ^$ index.html [L]
