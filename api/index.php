@@ -21,8 +21,7 @@ if (!empty($request_uri[1])) {
             break;
     }
 } else {
-    // Redirect to index.html instead of showing JSON API info
-    header("Location: /index.html");
-    exit();
+    http_response_code(404);
+    echo json_encode(["message" => "No endpoint specified."]);
 }
 ?>
