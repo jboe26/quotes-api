@@ -53,20 +53,33 @@ class AuthorController {
 
     private function createAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-
+    
+        // Check if the JSON was valid
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo json_encode(["message" => "Invalid JSON data"]);
             return;
         }
-
+    
         if (!empty($data->author)) {
             $this->author->author = $data->author;
-
-            echo json_encode($this->author->create() ? ["message" => "Author Created"] : ["message" => "Failed to Create Author"]);
+    
+            $new_author_id = $this->author->create();
+    
+            if ($new_author_id) {
+             
+                echo json_encode([
+                    "id" => $new_author_id,   
+                    "author" => $data->author,  
+                    "message" => "Author Created"
+                ]);
+            } else {
+                echo json_encode(["message" => "Failed to Create Author"]);
+            }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function updateAuthor() {
         $data = json_decode(file_get_contents("php://input"));
