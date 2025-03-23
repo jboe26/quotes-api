@@ -17,9 +17,8 @@ if (!empty($request_uri[1])) {
             include_once 'categories/index.php';
             break;
         case 'api':
-         
             header('Content-Type: text/html');
-            readfile(__DIR__ . '/index.html');
+            readfile(__DIR__ . '/../index.html');
             break;
         default:
             http_response_code(404);
