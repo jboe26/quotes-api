@@ -78,27 +78,32 @@ class QuoteController {
 
     private function createQuote() {
         $data = json_decode(file_get_contents("php://input"));
-
+    
+        // Check if the JSON was valid
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+    
         if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id)) {
             $this->quote->quote = $data->quote;
             $this->quote->author_id = $data->author_id;
             $this->quote->category_id = $data->category_id;
-
+    
             if (!$this->quote->authorExists()) {
                 echo json_encode(["message" => "author_id Not Found"]);
                 return;
             }
-
+    
             if (!$this->quote->categoryExists()) {
                 echo json_encode(["message" => "category_id Not Found"]);
                 return;
             }
-
+    
             $new_quote_id = $this->quote->create();
-
+    
             if ($new_quote_id) {
                 $new_quote = $this->quote->getQuoteById($new_quote_id);
-
                 echo json_encode([
                     "id" => $new_quote['id'],
                     "quote" => $new_quote['quote'],
@@ -106,36 +111,40 @@ class QuoteController {
                     "category_id" => $new_quote['category_id']
                 ]);
             } else {
-                echo json_encode([
-                    "message" => "Database Error"
-                ]);
+                echo json_encode(["message" => "Database Error"]);
             }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function updateQuote() {
         $data = json_decode(file_get_contents("php://input"));
-
+    
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+    
         if (!empty($data->quote) && !empty($data->author_id) && !empty($data->category_id) && !empty($data->id)) {
             $this->quote->quote = $data->quote;
             $this->quote->author_id = $data->author_id;
             $this->quote->category_id = $data->category_id;
             $this->quote->id = $data->id;
-
+    
             if (!$this->quote->authorExists()) {
                 echo json_encode(["message" => "author_id Not Found"]);
                 return;
             }
-
+    
             if (!$this->quote->categoryExists()) {
                 echo json_encode(["message" => "category_id Not Found"]);
                 return;
             }
-
+    
             $updated_quote = $this->quote->update();
-
+    
             if ($updated_quote && is_array($updated_quote)) {
                 echo json_encode([
                     "id" => $updated_quote['id'],
@@ -150,20 +159,26 @@ class QuoteController {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 
     private function deleteQuote() {
         $data = json_decode(file_get_contents("php://input"));
-
+    
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+    
         if (!empty($data->id)) {
             $this->quote->id = $data->id;
-
+    
             if (!$this->quote->quoteExists()) {
                 echo json_encode(["message" => "Quote Not Found"]);
                 return;
             }
-
+    
             $deleted_quote = $this->quote->delete();
-
+    
             if ($deleted_quote) {
                 echo json_encode(["message" => "Quote Deleted", "id" => $data->id]);
             } else {
@@ -173,6 +188,7 @@ class QuoteController {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
+    
 }
 
 ?>
