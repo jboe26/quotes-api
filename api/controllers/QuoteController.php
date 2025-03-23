@@ -106,7 +106,9 @@ class QuoteController {
                     "category_id" => $new_quote['category_id']
                 ]);
             } else {
-                echo json_encode(["message" => "Database Error"]);
+                echo json_encode([
+                    "message" => "Database Error"
+                ]);
             }
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
@@ -134,7 +136,7 @@ class QuoteController {
 
             $updated_quote = $this->quote->update();
 
-            if ($updated_quote) {
+            if ($updated_quote && is_array($updated_quote)) {
                 echo json_encode([
                     "id" => $updated_quote['id'],
                     "quote" => $updated_quote['quote'],
