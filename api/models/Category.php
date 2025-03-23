@@ -51,5 +51,15 @@ class Category {
         $stmt->bindParam(':id', $this->id);
         return $stmt->execute();
     }
+
+    
+    // Check if the Category exists
+    public function categoryExists() {
+        $query = "SELECT id FROM categories WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+        return $stmt->rowCount() > 0; 
+    }
 }
 ?>

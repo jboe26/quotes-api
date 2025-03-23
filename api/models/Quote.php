@@ -12,17 +12,37 @@ class Quote {
         $this->conn = $db;
     }
 
+    // Check if the author exists
+    public function authorExists() {
+        $query = "SELECT id FROM authors WHERE id = :author_id LIMIT 0,1";
+        
+        // Prepare query
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':author_id', $this->author_id);
+        
+        // Execute the query
+        $stmt->execute();
+
+        // Check if the author exists
+        if ($stmt->rowCount() > 0) {
+            return true; // Author exists
+        }
+
+        return false; // Author doesn't exist
+    }
+
+    // Read all quotes
     public function read() {
         $query = "SELECT q.id, q.quote, a.author, c.category
-        FROM quotes q
-        JOIN authors a ON q.author_id = a.id
-        JOIN categories c ON q.category_id = c.id";
+                  FROM quotes q
+                  JOIN authors a ON q.author_id = a.id
+                  JOIN categories c ON q.category_id = c.id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
-    
+
     // Read a single quote by ID
     public function readSingle() {
         $query = "SELECT quotes.id, quotes.quote, authors.author, categories.category
@@ -36,6 +56,7 @@ class Quote {
         return $stmt;
     }
 
+    // Read quotes by author
     public function readByAuthor() {
         $query = "SELECT q.id, q.quote, a.author, c.category 
                   FROM quotes q
@@ -50,6 +71,7 @@ class Quote {
         return $stmt;
     }
     
+    // Read quotes by category
     public function readByCategory() {
         $query = "SELECT q.id, q.quote, a.author, c.category 
                   FROM quotes q
@@ -64,6 +86,7 @@ class Quote {
         return $stmt;
     }
     
+    // Read quotes by both author and category
     public function readByAuthorAndCategory() {
         $query = "SELECT q.id, q.quote, a.author, c.category 
                   FROM quotes q
@@ -78,7 +101,6 @@ class Quote {
     
         return $stmt;
     }
-      
 
     // Create a new quote
     public function create() {
