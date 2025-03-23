@@ -27,7 +27,7 @@ if (!empty($request_uri[1])) {
     }
 } else {
     header('Content-Type: text/html');
-    readfile(__DIR__ . '/index.html');
+    readfile(__DIR__ . '/../index.html');
     exit();
 }
 ?>
