@@ -14,21 +14,21 @@ class Quote {
 
     // Check if the author exists
     public function authorExists() {
-        $query = "SELECT id FROM authors WHERE id = :author_id LIMIT 0,1";
+        $query = "SELECT id FROM authors WHERE id = :id LIMIT 1"; 
         
         // Prepare query
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':author_id', $this->author_id);
+        $stmt->bindParam('author_id', $this->author_id);
         
         // Execute the query
         $stmt->execute();
 
         // Check if the author exists
         if ($stmt->rowCount() > 0) {
-            return true; // Author exists
+            return true; 
         }
 
-        return false; // Author doesn't exist
+        return false; 
     }
 
     // Read all quotes

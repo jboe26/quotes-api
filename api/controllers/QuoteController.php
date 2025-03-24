@@ -1,5 +1,11 @@
 <?php
 
+set_exception_handler(function ($e) {
+    echo json_encode(["message" => "An error occurred", "error" => $e->getMessage()]);
+    http_response_code(500); // Internal Server Error
+});
+
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
@@ -81,7 +87,15 @@ class QuoteController {
     
         // Check if the JSON was valid
         if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400); // Bad Request
             echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+
+        // Check for missing parameters
+        if (empty($data->quote) || empty($data->author_id) || empty($data->category_id)) {
+            http_response_code(400); // Bad Request
+            echo json_encode(["message" => "Missing Required Parameters"]);
             return;
         }
     
@@ -173,7 +187,7 @@ class QuoteController {
             $this->quote->id = $data->id;
     
             if (!$this->quote->quoteExists()) {
-                echo json_encode(["message" => "Quote Not Found"]);
+                echo json_encode(["message" => "No Quotes Found"]);
                 return;
             }
     

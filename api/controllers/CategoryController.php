@@ -1,5 +1,11 @@
 <?php
 
+set_exception_handler(function ($e) {
+    echo json_encode(["message" => "An error occurred", "error" => $e->getMessage()]);
+    http_response_code(500); // Internal Server Error
+});
+
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
@@ -104,7 +110,7 @@ class CategoryController {
             $this->category->id = $data->id;
 
             if (!$this->category->categoryExists()) {
-                echo json_encode(["message" => "Category Not Found"]);
+                echo json_encode(["message" => "No Category Found"]);
                 return;
             }
 
