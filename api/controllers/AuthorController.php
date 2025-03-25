@@ -89,36 +89,21 @@ class AuthorController {
 
     private function updateAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-    
+
         if (json_last_error() !== JSON_ERROR_NONE) {
-            http_response_code(400); // Bad Request
             echo json_encode(["message" => "Invalid JSON data"]);
             return;
         }
-    
-        // Check for missing parameters
-        if (empty($data->id) || empty($data->author)) {
-            http_response_code(400); // Bad Request
-            echo json_encode(["message" => "Missing Required Parameters"]);
-            return;
-        }
-    
-        $this->author->id = $data->id;
-        $this->author->author = $data->author;
-    
-        $updated = $this->author->update();
-    
-        if ($updated) {
-            echo json_encode([
-                "id" => $data->id,
-                "author" => $data->author,
-                "message" => "Author Updated Successfully"
-            ]);
+
+        if (!empty($data->id) && !empty($data->author)) {
+            $this->author->id = $data->id;
+            $this->author->author = $data->author;
+
+            echo json_encode($this->author->update() ? ["message" => "Author Updated"] : ["message" => "Failed to Update Author"]);
         } else {
-            echo json_encode(["message" => "Failed to Update Author"]);
+            echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
-    
 
     private function deleteAuthor() {
         $data = json_decode(file_get_contents("php://input"));
