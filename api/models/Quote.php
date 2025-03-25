@@ -27,11 +27,11 @@ class Quote {
     // Read a single quote by ID
     public function readSingle() {
         $query = "SELECT quotes.id, quotes.quote, authors.author, categories.category, quotes.author_id, quotes.category_id
-                  FROM quotes 
-                  JOIN authors ON quotes.author_id = authors.id
-                  JOIN categories ON quotes.category_id = categories.id
-                  WHERE quotes.id = :id";
-
+                    FROM quotes 
+                    JOIN authors ON quotes.author_id = authors.id
+                    JOIN categories ON quotes.category_id = categories.id
+                    WHERE quotes.id = :id";
+    
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
