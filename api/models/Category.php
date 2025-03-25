@@ -32,7 +32,11 @@ class Category {
         $query = "INSERT INTO categories (category) VALUES (:category)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':category', $this->category);
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $this->conn->lastInsertId();
+        } else {
+            return false;
+        }
     }
 
     // Update a category
@@ -52,14 +56,13 @@ class Category {
         return $stmt->execute();
     }
 
-    
     // Check if the Category exists
     public function categoryExists() {
         $query = "SELECT id FROM categories WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT); // Corrected parameter binding
         $stmt->execute();
-        return $stmt->rowCount() > 0; 
+        return $stmt->rowCount() > 0;
     }
 }
 ?>
