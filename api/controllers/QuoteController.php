@@ -1,10 +1,5 @@
 <?php
 
-set_exception_handler(function ($e) {
-    echo json_encode(["message" => "An error occurred", "error" => $e->getMessage()]);
-    http_response_code(500); // Internal Server Error
-});
-
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 

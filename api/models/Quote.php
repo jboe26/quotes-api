@@ -15,9 +15,9 @@ class Quote {
     // Read all quotes
     public function read() {
         $query = "SELECT q.id, q.quote, a.author, c.category
-                  FROM quotes q
-                  JOIN authors a ON q.author_id = a.id
-                  JOIN categories c ON q.category_id = c.id";
+                    FROM quotes q
+                    JOIN authors a ON q.author_id = a.id
+                    JOIN categories c ON q.category_id = c.id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -26,7 +26,7 @@ class Quote {
 
     // Read a single quote by ID
     public function readSingle() {
-        $query = "SELECT quotes.id, quotes.quote, authors.author, categories.category
+        $query = "SELECT quotes.id, quotes.quote, authors.author, categories.category, quotes.author_id, quotes.category_id
                   FROM quotes 
                   JOIN authors ON quotes.author_id = authors.id
                   JOIN categories ON quotes.category_id = categories.id
