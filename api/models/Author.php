@@ -24,7 +24,7 @@ class Author {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
-        return $stmt;
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Return associative array
     }
 
     // Create a new author
@@ -34,9 +34,9 @@ class Author {
         $stmt->bindParam(':author', $this->author);
 
         if ($stmt->execute()) {
-            return true;  // Return success flag
+            return $this->conn->lastInsertId(); // Return the new ID
         }
-        return false;  // Return failure flag
+        return false;
     }
 
     // Update an author
@@ -45,7 +45,10 @@ class Author {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':author', $this->author);
         $stmt->bindParam(':id', $this->id);
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $this->readSingle();
+        }
+        return false;
     }
 
     // Delete an author
