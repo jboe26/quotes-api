@@ -12,7 +12,24 @@ class Quote {
         $this->conn = $db;
     }
 
+    // Check if the author exists
+    public function authorExists() {
+        $query = "SELECT id FROM authors WHERE id = :id LIMIT 1"; 
+        
+        // Prepare query
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam('author_id', $this->author_id);
+        
+        // Execute the query
+        $stmt->execute();
 
+        // Check if the author exists
+        if ($stmt->rowCount() > 0) {
+            return true; 
+        }
+
+        return false; 
+    }
 
     // Read all quotes
     public function read() {
@@ -28,15 +45,15 @@ class Quote {
 
     // Read a single quote by ID
     public function readSingle() {
-        $query = "SELECT quotes.id, quotes.quote, authors.author, categories.category, quotes.author_id, quotes.category_id
-                    FROM quotes 
-                    JOIN authors ON quotes.author_id = authors.id
-                    JOIN categories ON quotes.category_id = categories.id
-                    WHERE quotes.id = :id";
+        $query = "SELECT quotes.id, quotes.quote, authors.author, categories.category
+                  FROM quotes 
+                  JOIN authors ON quotes.author_id = authors.id
+                  JOIN categories ON quotes.category_id = categories.id
+                  WHERE quotes.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC); // Return associative array
+        return $stmt;
     }
 
     // Read quotes by author
@@ -112,7 +129,7 @@ class Quote {
         $stmt->bindParam(':id', $this->id);
 
         if ($stmt->execute()) {
-            return $this->readSingle();
+            return true;
         } else {
             return false;
         }
@@ -129,15 +146,6 @@ class Quote {
         } else {
             return false;
         }
-    }
-
-     // Check if the author exists
-    public function authorExists() {
-        $query = "SELECT id FROM authors WHERE id = :id LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $this->author_id); // Corrected line
-        $stmt->execute();
-        return $stmt->rowCount() > 0;
     }
 
 }

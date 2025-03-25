@@ -24,7 +24,7 @@ class Category {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC); // Return associative array
+        return $stmt;
     }
 
     // Create a new category
@@ -32,10 +32,7 @@ class Category {
         $query = "INSERT INTO categories (category) VALUES (:category)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':category', $this->category);
-        if ($stmt->execute()) {
-            return $this->conn->lastInsertId();
-        }
-        return false;
+        return $stmt->execute();
     }
 
     // Update a category
@@ -44,10 +41,7 @@ class Category {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':category', $this->category);
         $stmt->bindParam(':id', $this->id);
-        if ($stmt->execute()) {
-            return $this->readSingle();
-        }
-        return false;
+        return $stmt->execute();
     }
 
     // Delete a category
