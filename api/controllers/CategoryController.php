@@ -83,22 +83,31 @@ class CategoryController {
 
     private function updateCategory() {
         $data = json_decode(file_get_contents("php://input"));
+    
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400); // Bad Request
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+    
         if (!empty($data->id) && !empty($data->category)) {
             $this->category->id = $data->id;
             $this->category->category = $data->category;
-
+    
             $updated = $this->category->update();
-
+    
             if ($updated) {
+                http_response_code(200); // OK
                 echo json_encode([
                     "id" => $data->id,
                     "category" => $data->category,
-                    "message" => "Category Updated Successfully"
                 ]);
             } else {
-                echo json_encode(["message" => "Failed to Update Category"]);
+                http_response_code(404); // Not Found
+                echo json_encode(["message" => "Category not found or failed to update"]);
             }
         } else {
+            http_response_code(400); // Bad Request
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }

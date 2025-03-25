@@ -89,18 +89,35 @@ class AuthorController {
 
     private function updateAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-
+    
         if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400); // Bad Request
             echo json_encode(["message" => "Invalid JSON data"]);
             return;
         }
-
+    
         if (!empty($data->id) && !empty($data->author)) {
             $this->author->id = $data->id;
             $this->author->author = $data->author;
-
-            echo json_encode($this->author->update() ? ["message" => "Author Updated"] : ["message" => "Failed to Update Author"]);
+    
+            // Perform the update and check if it was successful
+            if ($this->author->update()) {
+                // Fetch the updated author data
+                $updatedAuthor = $this->author->read_single(); // Assuming you have a read_single method
+    
+                if ($updatedAuthor) {
+                    http_response_code(200); // OK
+                    echo json_encode($updatedAuthor);
+                } else {
+                    http_response_code(500); // Internal Server Error
+                    echo json_encode(["message" => "Failed to retrieve updated author"]);
+                }
+            } else {
+                http_response_code(404); // Not Found
+                echo json_encode(["message" => "Author not found or failed to update"]);
+            }
         } else {
+            http_response_code(400); // Bad Request
             echo json_encode(["message" => "Missing Required Parameters"]);
         }
     }
