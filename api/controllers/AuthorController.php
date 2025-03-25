@@ -102,6 +102,7 @@ class AuthorController {
 
         if ($this->author->update()) {
             $updatedAuthor = $this->author->readSingle();
+            $updatedAuthor = $updatedAuthor->fetch(PDO::FETCH_ASSOC);
             if ($updatedAuthor) {
                 http_response_code(200);
                 echo json_encode($updatedAuthor);
