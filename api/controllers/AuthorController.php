@@ -59,24 +59,23 @@ class AuthorController {
 
     private function createAuthor() {
         $data = json_decode(file_get_contents("php://input"));
-    
+
         // Check if the JSON was valid
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo json_encode(["message" => "Invalid JSON data"]);
             return;
         }
-    
+
         if (!empty($data->author)) {
             $this->author->author = $data->author;
-    
+
             $new_author_id = $this->author->create();
-    
+
             if ($new_author_id) {
-             
+
                 echo json_encode([
-                    "id" => $new_author_id,   
-                    "author" => $data->author,  
-                    "message" => "Author Created"
+                    "id" => $new_author_id,
+                    "author" => $data->author,
                 ]);
             } else {
                 echo json_encode(["message" => "Failed to Create Author"]);
@@ -141,7 +140,7 @@ class AuthorController {
 
             $deleted_author = $this->author->delete();
 
-            echo json_encode($deleted_author ? ["message" => "Author Deleted", "id" => $data->id] : ["message" => "Failed to delete author"]);
+            echo json_encode($deleted_author ? ["id" => $data->id] : ["message" => "Failed to delete author"]);
         } else {
             echo json_encode(["message" => "Missing Required Parameters"]);
         }

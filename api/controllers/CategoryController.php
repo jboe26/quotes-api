@@ -60,18 +60,23 @@ class CategoryController {
     private function createCategory() {
         $data = json_decode(file_get_contents("php://input"));
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+
         if (!empty($data->category)) {
             $this->category->category = $data->category;
 
             $new_category_id = $this->category->create();
 
             if ($new_category_id) {
-                $new_category = $this->category->getCategoryById($new_category_id);
+                $this->category->id = $new_category_id;
+                $new_category = $this->category->readSingle();
 
                 echo json_encode([
                     "id" => $new_category['id'],
                     "category" => $new_category['category'],
-                    "message" => "Category Created Successfully"
                 ]);
             } else {
                 echo json_encode(["message" => "Database Error"]);
@@ -115,6 +120,11 @@ class CategoryController {
     private function deleteCategory() {
         $data = json_decode(file_get_contents("php://input"));
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+
         if (!empty($data->id)) {
             $this->category->id = $data->id;
 
@@ -126,10 +136,7 @@ class CategoryController {
             $deleted_category = $this->category->delete();
 
             if ($deleted_category) {
-                echo json_encode([
-                    "message" => "Category Deleted Successfully",
-                    "id" => $data->id
-                ]);
+                echo json_encode(["id" => $data->id]);
             } else {
                 echo json_encode(["message" => "Failed to delete category"]);
             }
