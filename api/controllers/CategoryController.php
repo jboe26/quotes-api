@@ -83,25 +83,36 @@ class CategoryController {
 
     private function updateCategory() {
         $data = json_decode(file_get_contents("php://input"));
-        if (!empty($data->id) && !empty($data->category)) {
-            $this->category->id = $data->id;
-            $this->category->category = $data->category;
-
-            $updated = $this->category->update();
-
-            if ($updated) {
-                echo json_encode([
-                    "id" => $data->id,
-                    "category" => $data->category,
-                    "message" => "Category Updated Successfully"
-                ]);
-            } else {
-                echo json_encode(["message" => "Failed to Update Category"]);
-            }
-        } else {
+    
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(400); // Bad Request
+            echo json_encode(["message" => "Invalid JSON data"]);
+            return;
+        }
+    
+        // Check for missing parameters
+        if (empty($data->id) || empty($data->category)) {
+            http_response_code(400); // Bad Request
             echo json_encode(["message" => "Missing Required Parameters"]);
+            return;
+        }
+    
+        $this->category->id = $data->id;
+        $this->category->category = $data->category;
+    
+        $updated = $this->category->update();
+    
+        if ($updated) {
+            echo json_encode([
+                "id" => $data->id,
+                "category" => $data->category,
+                "message" => "Category Updated Successfully"
+            ]);
+        } else {
+            echo json_encode(["message" => "Failed to Update Category"]);
         }
     }
+    
 
     private function deleteCategory() {
         $data = json_decode(file_get_contents("php://input"));
